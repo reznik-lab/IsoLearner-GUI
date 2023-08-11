@@ -1,3 +1,5 @@
 uploads/
 plot.png
 predict.png
+__pycache__/
+Brain_Glucose_IsoLearner.pkl

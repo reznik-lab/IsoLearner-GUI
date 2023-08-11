@@ -6,6 +6,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 import IsoLearner_added_functionality as IsoLearner
+import pickle
 
 app = Flask(__name__)
 
@@ -61,8 +62,8 @@ def predict_metabolite():
     isotope = request.form['isotope']
     #file = request.form['file']
 
-    Brain_Glucose_IsoLearner = IsoLearner.IsoLearner(absolute_data_path = "/Users/goldfei/Documents/IsoLearner-GUI",
-                                            relative_data_path = "uploads")
+    fileObj = open('Brain_Glucose_IsoLearner.pkl', 'rb')
+    Brain_Glucose_IsoLearner = pickle.load(fileObj)
     
     val_ground, val_pred = Brain_Glucose_IsoLearner.cross_validation_testing()
 
