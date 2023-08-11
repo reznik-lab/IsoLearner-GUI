@@ -14,6 +14,9 @@ ALLOWED_EXTENSIONS = {'csv'}
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+def loading_screen():
+    return render_template('loading.html')
+
 
 @app.route('/', methods=['GET'])
 def index():
@@ -28,8 +31,14 @@ def upload_file():
 
 @app.route('/plotting', methods=['GET'])
 def plotting():
-    files = [f for f in os.listdir(UPLOAD_FOLDER) if os.path.isfile(os.path.join(UPLOAD_FOLDER, f))]
-    return render_template('plotting.html', files=files)
+    all_files = [f for f in os.listdir(UPLOAD_FOLDER) if os.path.isfile(os.path.join(UPLOAD_FOLDER, f))]
+    iso_files = []
+
+    for file in all_files:
+        if 'isotopolouges' in file:
+            iso_files.append(file)
+
+    return render_template('plotting.html', files=iso_files)
 
 @app.route('/plot', methods=['POST'])
 def plot_iso():
@@ -38,14 +47,11 @@ def plot_iso():
     file = request.form['file']
 
     data= pd.read_csv(f'/Users/goldfei/Documents/IsoLearner-GUI/uploads/{file}')
-
     vis.plot_brain(data, iso_name=f'{iso_name} m+{isotope}')
-
     return send_from_directory('/Users/goldfei/Documents/IsoLearner-GUI/', 'plot.png')
 
 @app.route('/predicting', methods=['GET'])
 def predicting():
-    files = [f for f in os.listdir(UPLOAD_FOLDER) if os.path.isfile(os.path.join(UPLOAD_FOLDER, f))]
     return render_template('predicting.html')
 
 
@@ -63,6 +69,10 @@ def predict_metabolite():
     vis.cross_validation_results(val_ground, val_pred, coords_df = Brain_Glucose_IsoLearner.coords_df, iso_to_plot = f'{iso_name} m+{isotope}')
 
     return send_from_directory('/Users/goldfei/Documents/IsoLearner-GUI/', 'predict.png')
+
+@app.route('/loading', methods=['GET'])
+def loading():
+    return render_template('loading.html')
 
 
 if __name__ == '__main__':
